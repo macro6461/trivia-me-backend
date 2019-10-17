@@ -15,6 +15,7 @@
     "express": "^4.16.4",
     "mongoose": "^5.7.5",
     "nodemon": "^1.18.10",
+    "set-value": "^3.0.1",
     "validator": "^11.1.0"
   }
 }
