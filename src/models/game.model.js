@@ -3,8 +3,12 @@ const Schema = mongoose.Schema;
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
 let Game = new Schema({
-    owner:{
-        type: mongoose.Schema.Types.ObjectId, ref: 'User'
+    owner: {
+        id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        },
+        username: String
     },
     name:{
         type: String
@@ -25,14 +29,6 @@ let Game = new Schema({
         type: Boolean, default: false
     }
 });
-
-Game.statics.findUserGames = (id) =>{
-    var game = Game.find({ 
-      owner: id
-    });
-    console.log(game);
-  };
-
 
 module.exports = mongoose.model('Game', Game);
 
