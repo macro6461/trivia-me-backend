@@ -3,6 +3,7 @@ const app = express();
 const cors = require("cors");
 const mongoose = require("mongoose");
 let bodyParser = require("body-parser");
+const bcrypt = require("bcryptjs");
 const userRoutes = express.Router();
 const gameRoutes = express.Router();
 const PORT = 4000;
@@ -49,6 +50,7 @@ userRoutes.route('/:id').get(function(req, res){
 });
 
 userRoutes.route('/add').post(function(req, res){
+  req.body.password = bcrypt.hashSync(req.body.password, 10);
   let user = new User(req.body);
   user.save()
     .then(user=>{
