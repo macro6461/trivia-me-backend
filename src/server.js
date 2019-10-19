@@ -44,7 +44,11 @@ userRoutes.route('/:id').get(function(req, res){
     } else {
       var response = {}
       response.user = user
-      findGames(req.params.id, user, response, res);
+      if (user){
+        findGames(req.params.id, user, response, res);
+      } else {
+        res.status(400).send('user not found :(')
+      }
     }
   });
 });
@@ -82,6 +86,16 @@ userRoutes.route('/update/:id').post(function(req, res){
     }
 
   });
+});
+
+userRoutes.route('/delete/:id').delete(function(req, res){
+  User.find({_id: req.params.id }).remove().exec()
+    .then(user=>{
+      res.status(200).send('account deleted :)');
+    })
+    .catch(err=>{
+      res.status(400).send(err)
+    });
 });
 
 app.use('/users', userRoutes);
