@@ -30,7 +30,8 @@ let User = new Schema({
       type: Array, required: false, default: null
   },
   games:{
-      type: Array, required: false,
+      type: Array, required: false, default: []
+      // type: mongoose.Schema.Types.ObjectId, ref: 'Game'
   },
   statistics:{
     required: false,

@@ -4,7 +4,7 @@ var ObjectId = mongoose.Schema.Types.ObjectId;
 
 let Game = new Schema({
     owner:{
-        type: ObjectId
+        type: mongoose.Schema.Types.ObjectId, ref: 'User'
     },
     name:{
         type: String

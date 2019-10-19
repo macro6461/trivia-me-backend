@@ -14,12 +14,11 @@ app.use(cors());
 app.use(bodyParser.json());
 
 mongoose.connect('mongodb://127.0.0.1:27017/trivia-me', {useNewUrlParser: true, useUnifiedTopology: true });
-// mongoose.connect('mongodb://localhost:27017', {useNewUrlParser: true});
 
 const connection = mongoose.connection;
 
 connection.on('error', function(err) { 
-  console.log('***error: ' + err.message); 
+  console.log('error: ' + err.message); 
   process.exit();
 });
 
@@ -30,7 +29,7 @@ connection.once('open', function(){
 userRoutes.route('/').get(function(req, res){
   User.find(function(err, users){
     if(err){
-      console.log(err);
+      res.status(400).send(err);
     } else {
       res.json(users)
     }
@@ -40,9 +39,11 @@ userRoutes.route('/').get(function(req, res){
 userRoutes.route('/:id').get(function(req, res){
   User.findById(req.params.id, function(err, user){
     if(err){
-      console.log(err);
+      res.status(400).send(err)
     } else {
-      res.json(user);
+      var response = {}
+      response.user = user
+      findGames(req.params.id, user, response, res);
     }
   });
 });
@@ -51,19 +52,20 @@ userRoutes.route('/add').post(function(req, res){
   let user = new User(req.body);
   user.save()
     .then(user=>{
-      res.status(200).json({user});
+      res.status(200).json(user);
     })
     .catch(err=>{
-      console.log(err);
-      res.status(400).send('signing up failed')
+      res.status(400).send(err)
     });
 });
 
 userRoutes.route('/update/:id').post(function(req, res){
   User.findOne({_id : req.params.id}, function(err, user){
     if(!user){
-      res.status(404).send('data not found');
+      res.status(404).send(err);
     } else {
+
+      var response = {};
 
       user.firstName = req.body.firstName;
       user.lastName = req.body.lastName;
@@ -71,28 +73,10 @@ userRoutes.route('/update/:id').post(function(req, res){
       user.password = req.body.password;
       user.email = req.body.email;
       user.age = req.body.age;
-      user.creditCards = req.body.creditCards;
 
-      //FIND ALL OF USERS GAMES
-      Game.find({owner: user._id}, function(err, games){
-        if(err){
-          console.log(err)
-          user.save().then(user=>{
-            res.json(user);
-          })
-          .catch(err=>{
-            res.status(400).send(err);
-          });
-        } else {
-          user.games = games.map((game)=>{return game._id});
-          user.save().then(user=>{
-            res.json(user);
-          })
-          .catch(err=>{
-            res.status(400).send(err);
-          });
-        }
-      })
+      response.user = user
+
+      findGames(req.params.id, user, response, res)
     }
 
   });
@@ -105,9 +89,8 @@ app.use('/users', userRoutes);
 gameRoutes.route('/').get(function(req, res){
   Game.find(function(err, games){
     if(err){
-      console.log(err);
+      res.status(400).send(err);
     } else {
-      console.log(games)
       res.json(games)
     }
   });
@@ -116,7 +99,7 @@ gameRoutes.route('/').get(function(req, res){
 gameRoutes.route('/:id').get(function(req, res){
   Game.findById(req.params.id, function(err, game){
     if(err){
-      console.log(err);
+      res.status(400).send(err);
     } else {
       res.json(game);
     }
@@ -124,22 +107,20 @@ gameRoutes.route('/:id').get(function(req, res){
 });
 
 gameRoutes.route('/add').post(function(req, res){
-  console.log(req.body);
-  console.log(req.headers)
   let game = new Game(req.body);
   game.save()
     .then(game=>{
-      res.status(200).json({'game': 'Game made successfully'});
+      res.status(200).json(game);
     })
     .catch(err=>{
-      res.status(400).send('Game made failed')
+      res.status(400).send(err)
     });
 });
 
 gameRoutes.route('/update/:id').post(function(req, res){
   Game.findById(req.params.id, function(err, game){
-    if(!game){
-      res.status(404).send('data not found');
+    if(err){
+      res.status(404).send(err);
     } else {
       game.owner = req.body.owner;
       game.name = req.body.name;
@@ -150,14 +131,32 @@ gameRoutes.route('/update/:id').post(function(req, res){
       game.isClosed = req.body.isClosed;
 
       game.save().then(game=>{
-        res.json('Update successful');
+        res.json(game);
       })
       .catch(err=>{
-        res.status(400).send('Update failed');
+        res.status(400).send(err);
       });
     }
   });
 });
+
+//FIND USER GAMES HELPER
+const findGames = (id, user, response, res) =>{
+  Game.find({owner: id}, (err, games) => {
+    if (err){
+      res.status(400).send(err);
+    } else {
+      user.games = games.map((game)=>{return game._id});
+      response.games = games
+      user.save().then(user=>{
+        res.json(response);
+      })
+      .catch(err=>{
+        res.status(400).send(err);
+      });
+    }
+  })
+};
 
 app.use('/games', gameRoutes);
 
