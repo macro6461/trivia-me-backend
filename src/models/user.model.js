@@ -10,7 +10,8 @@ let User = new Schema({
     type: String, required: false, trim: true, default: null
   },
   username: {
-    type: String, required: true, trim: true, default: null
+    type: String, required: true, trim: true, default: null,
+    unique: true
   },
   password: {
     type: String, required: true, trim: true, default: null
