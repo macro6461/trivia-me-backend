@@ -56,12 +56,13 @@ userRoutes.route('/').get(function(req, res){
         if (!bcrypt.compareSync(req.body.password, user.password)){
           return res.status(400).send( "The password is invalid" )
         }
+        // var token = jwt.sign({username: req.body.username}, 'supersecret',{expiresIn: 120});
         return res.status(200).send("The username and password combination is correct!");
       }).catch(err=>{
         res.status(500).send(err)
       })
     } catch (error) {
-      response.status(500).send(error);
+      res.status(500).send(error);
     }
   });
   
@@ -99,5 +100,23 @@ userRoutes.route('/').get(function(req, res){
         res.status(400).send(err)
       });
   });
+
+  //FIND USER GAMES HELPER
+  const findGames = (id, user, response, res) =>{
+    Game.find({owner: id}, (err, games) => {
+      if (err){
+        res.status(400).send(err);
+      } else {
+        user.games = games.map((game)=>{return game._id});
+        response.games = games
+        user.save().then(user=>{
+          res.json(response);
+        })
+        .catch(err=>{
+          res.status(400).send(err);
+        });
+      }
+    })
+  };
 
   module.exports = userRoutes;

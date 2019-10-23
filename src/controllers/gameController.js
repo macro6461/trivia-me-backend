@@ -56,24 +56,6 @@ gameRoutes.route('/').get(function(req, res){
     });
   });
   
-  //FIND USER GAMES HELPER
-  const findGames = (id, user, response, res) =>{
-    Game.find({owner: id}, (err, games) => {
-      if (err){
-        res.status(400).send(err);
-      } else {
-        user.games = games.map((game)=>{return game._id});
-        response.games = games
-        user.save().then(user=>{
-          res.json(response);
-        })
-        .catch(err=>{
-          res.status(400).send(err);
-        });
-      }
-    })
-  };
-  
   gameRoutes.route('/delete/:id').delete(function(req, res){
     Game.find({_id: req.params.id }).deleteOne().exec()
       .then(user=>{

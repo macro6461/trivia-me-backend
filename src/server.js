@@ -1,9 +1,14 @@
 const express = require("express");
+var jwt = require('jsonwebtoken');
 const app = express();
 const cors = require("cors");
 const mongoose = require("mongoose");
+require('dotenv').config();
 let bodyParser = require("body-parser");
-const PORT = 4000;
+
+//ENVIRONMENT VARIABLES
+const PORT = process.env.PORT
+const URL = process.env.URL
 
 var userRoutes = require('./controllers/userController');
 var gameRoutes = require('./controllers/gameController');
@@ -11,7 +16,7 @@ var gameRoutes = require('./controllers/gameController');
 app.use(cors());
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb://127.0.0.1:27017/trivia-me', {useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(URL, {useNewUrlParser: true, useUnifiedTopology: true });
 
 const connection = mongoose.connection;
 
