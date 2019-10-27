@@ -74,18 +74,17 @@ gameRoutes.route('/').get(function(req, res){
       var owner =  await User.findOne({ _id: game.owner })
       await owner.removeGame(req.params.id)
       if (!owner){
-        console.log('could not delete game from owner')
+        res.status(400).send('could not delete game from owner')
       } else {
-        console.log('yas')
-        await game.deleteOne().exec()
-        .then(game=>{
-          res.status(200).send('game deleted :)');
-        })
-        .catch(err=>{
-          res.status(400).send(err)
-        });
+        Game.find({_id: req.params.id }).deleteOne().exec()
+          .then(user=>{
+            res.status(200).send('game deleted :)');
+          })
+          .catch(err=>{
+            res.status(400).send(err)
+          });
       }
-    } catch (error) {
+     } catch (error) {
       res.status(500).send(error);
     }
   });
