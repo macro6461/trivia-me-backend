@@ -51,7 +51,6 @@ userRoutes.route('/').get(function(req, res){
   userRoutes.route("/login").post(async (req, res) => {
     try {
       var user = await User.findOne({ username: req.body.username })
-      
         if (!user){
           return res.status(400).send("The username does not exist")
         } 
@@ -81,13 +80,9 @@ userRoutes.route('/').get(function(req, res){
         user.password = req.body.password;
         user.email = req.body.email;
         user.age = req.body.age;
-        // user.games = [];
         user.save()
 
         res.json(user)
-  
-        // response.user = user
-        // findGames(req.params.id, user, response, res)
       }
   
     });
