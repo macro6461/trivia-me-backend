@@ -4,11 +4,9 @@ var ObjectId = mongoose.Schema.Types.ObjectId;
 
 let Game = new Schema({
     owner: {
-        id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
-        },
-        username: String
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
     },
     name:{
         type: String

@@ -16,7 +16,13 @@ var gameRoutes = require('./controllers/gameController');
 app.use(cors());
 app.use(bodyParser.json());
 
-mongoose.connect(URL, {useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.set('debug', true);
+
+mongoose.connect(URL, {
+  useNewUrlParser: true, 
+  useUnifiedTopology: true, 
+  useCreateIndex: true 
+});
 
 const connection = mongoose.connection;
 
