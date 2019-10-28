@@ -58,8 +58,6 @@ userRoutes.route('/').get(function(req, res){
           return res.status(400).send( "The password is invalid" )
         }
         const token = await user.generateAuthToken()
-        // user = user.select('-password');
-        // console.log(user)
         return res.status(200).send({user, token});
     } catch (error) {
       res.status(500).send(error);
@@ -72,16 +70,13 @@ userRoutes.route('/').get(function(req, res){
       if(!user){
         res.status(404).send(err);
       } else {
-
         req.body.password = bcrypt.hashSync(req.body.password, 10);
-
         user.firstName = req.body.firstName;
         user.lastName = req.body.lastName;
         user.username = req.body.username;
         user.password = req.body.password;
         user.email = req.body.email;
         user.age = req.body.age;
-        // user.games = [];
         user.save()
 
         res.json(user)
@@ -92,13 +87,16 @@ userRoutes.route('/').get(function(req, res){
   
   //DELETE ACCOUNT
   userRoutes.route('/delete/:id').delete(function(req, res){
-    User.find({_id: req.params.id }).deleteOne().exec()
+
+    User.find({_id: req.params.id})
       .then(user=>{
+        Game.deleteMany({owner: req.params.id, isPrivate: true})
         res.status(200).send('account deleted :)');
       })
       .catch(err=>{
         res.status(400).send(err)
       });
+
   });
 
   //DELETE ALL
