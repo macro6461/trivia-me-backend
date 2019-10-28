@@ -58,7 +58,8 @@ userRoutes.route('/').get(function(req, res){
           return res.status(400).send( "The password is invalid" )
         }
         const token = await user.generateAuthToken()
-        console.log('user is valid')
+        // user = user.select('-password');
+        // console.log(user)
         return res.status(200).send({user, token});
     } catch (error) {
       res.status(500).send(error);
@@ -71,15 +72,16 @@ userRoutes.route('/').get(function(req, res){
       if(!user){
         res.status(404).send(err);
       } else {
-  
-        var response = {};
-  
+
+        req.body.password = bcrypt.hashSync(req.body.password, 10);
+
         user.firstName = req.body.firstName;
         user.lastName = req.body.lastName;
         user.username = req.body.username;
         user.password = req.body.password;
         user.email = req.body.email;
         user.age = req.body.age;
+        // user.games = [];
         user.save()
 
         res.json(user)

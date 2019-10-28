@@ -74,7 +74,7 @@ gameRoutes.route('/').get(function(req, res){
       var owner =  await User.findOne({ _id: game.owner })
       await owner.removeGame(req.params.id)
       if (!owner){
-        res.status(400).send('could not delete game from owner')
+        res.status(400)('could not delete game from owner')
       } else {
         Game.find({_id: req.params.id }).deleteOne().exec()
           .then(user=>{

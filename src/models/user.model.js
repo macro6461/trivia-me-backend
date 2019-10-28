@@ -85,9 +85,6 @@ User.methods.removeGame = async function(id) {
   const user = this;
   var games = user.games;
   games = games.filter((x)=>{
-    console.log("x: " + x)
-    console.log("id: " + id)
-    console.log(x != id);
     return x != id
   })
   console.log(games)
